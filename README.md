@@ -1,7 +1,7 @@
 # usi-image
 
 ### API
-** add a record **
+**add a record**
 ```
 POST /image-record
 
@@ -16,7 +16,7 @@ result
 201 Created
 ```
 
-** get a record **
+**get a record**
 ```
 GET /image-record/{fileName}
 
