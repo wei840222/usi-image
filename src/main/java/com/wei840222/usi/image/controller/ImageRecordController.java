@@ -1,5 +1,7 @@
 package com.wei840222.usi.image.controller;
 
+import java.util.Optional;
+
 import javax.validation.Valid;
 
 import com.wei840222.usi.image.model.ImageRecord;
@@ -26,10 +28,15 @@ public class ImageRecordController {
 
     @GetMapping
     @RequestMapping("/{imageName}")
-    public ImageRecord getImageRecord(@PathVariable("imageName") String imageName) {
-        final ImageRecord imageRecord = this.redisService.get(imageName);
-        log.info("getImageRecord - 200");
-        return imageRecord;
+    public ResponseEntity<ImageRecord> getImageRecord(@PathVariable("imageName") String imageName) {
+        final Optional<ImageRecord> optionalImageRecord = Optional.ofNullable(this.redisService.get(imageName));
+        if (optionalImageRecord.isPresent()) {
+            log.info("getImageRecord - 200");
+            return new ResponseEntity<ImageRecord>(optionalImageRecord.get(), HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<ImageRecord>(HttpStatus.NOT_FOUND); 
+        }
     }
 
     @PostMapping

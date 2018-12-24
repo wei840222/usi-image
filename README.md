@@ -9,7 +9,8 @@ body
 {
 	"imageName": "2018112800039_AOI.jpg",
 	"mergeFile": "20181128.merge",
-	"startLine": 10007
+	"startByte": 10007,
+	"fileSize": 1024
 }
 
 result
@@ -24,7 +25,8 @@ result
 {
 	"imageName": "2018112800039_AOI.jpg",
 	"mergeFile": "20181128.merge",
-	"startLine": 10007
+	"startByte": 10007,
+	"fileSize": 1024
 }
 ```
 
