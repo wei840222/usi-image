@@ -5,6 +5,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import com.wei840222.usi.image.model.ImageRecord;
+import com.wei840222.usi.image.service.HbaseService;
 import com.wei840222.usi.image.service.RedisService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ImageRecordController {
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private HbaseService hbaseService;
 
     @GetMapping
     @RequestMapping("/{imageName}")
@@ -43,6 +46,28 @@ public class ImageRecordController {
     public ResponseEntity<Void> addImageRecord(@Valid @RequestBody ImageRecord imageRecord) {
         this.redisService.set(imageRecord.getImageName(), imageRecord);
         log.info("addImageRecord - 201", imageRecord);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    @RequestMapping("/hbase/{imageName}")
+    public ResponseEntity<ImageRecord> getImageRecordFromHBase(@PathVariable("imageName") String imageName) {
+        final Optional<ImageRecord> optionalImageRecord = Optional.ofNullable(this.hbaseService.getImageRecord(imageName));
+        if (optionalImageRecord.isPresent()) {
+            log.info("getImageRecordFromHBase - 200");
+            return new ResponseEntity<ImageRecord>(optionalImageRecord.get(), HttpStatus.OK);
+        }
+        else {
+            log.info("getImageRecordFromHBase - 404");
+            return new ResponseEntity<ImageRecord>(HttpStatus.NOT_FOUND); 
+        }
+    }
+
+    @PostMapping
+    @RequestMapping("/hbase")
+    public ResponseEntity<Void> addImageRecordToHBase(@Valid @RequestBody ImageRecord imageRecord) {
+        this.hbaseService.saveImageRecord(imageRecord);
+        log.info("addImageRecordToHBase - 201", imageRecord);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

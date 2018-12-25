@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ImageRecord implements Serializable {
     private static final long serialVersionUID = 100L;
-    
+
     @NotEmpty private String imageName;
     @NotEmpty private String mergeFile;
     @NonNull private Integer startByte;
