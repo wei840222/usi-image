@@ -32,42 +32,28 @@ public class ImageRecordController {
     @GetMapping
     @RequestMapping("/{imageName}")
     public ResponseEntity<ImageRecord> getImageRecord(@PathVariable("imageName") String imageName) {
-        final Optional<ImageRecord> optionalImageRecord = Optional.ofNullable(this.redisService.get(imageName));
+        Optional<ImageRecord> optionalImageRecord = Optional.ofNullable(this.redisService.get(imageName));
         if (optionalImageRecord.isPresent()) {
-            log.info("getImageRecord - 200");
+            log.info("getImageRecord - cache hit - 200");
             return new ResponseEntity<ImageRecord>(optionalImageRecord.get(), HttpStatus.OK);
         }
         else {
-            return new ResponseEntity<ImageRecord>(HttpStatus.NOT_FOUND); 
+            optionalImageRecord = Optional.ofNullable(this.hbaseService.getImageRecord(imageName));
+            if (optionalImageRecord.isPresent()) {
+                log.info("getImageRecord - 200");
+                return new ResponseEntity<ImageRecord>(optionalImageRecord.get(), HttpStatus.OK);
+            } else {
+                log.info("getImageRecord - 404");
+                return new ResponseEntity<ImageRecord>(HttpStatus.NOT_FOUND);
+            }
         }
     }
 
     @PostMapping
     public ResponseEntity<Void> addImageRecord(@Valid @RequestBody ImageRecord imageRecord) {
         this.redisService.set(imageRecord.getImageName(), imageRecord);
-        log.info("addImageRecord - 201", imageRecord);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @GetMapping
-    @RequestMapping("/hbase/{imageName}")
-    public ResponseEntity<ImageRecord> getImageRecordFromHBase(@PathVariable("imageName") String imageName) {
-        final Optional<ImageRecord> optionalImageRecord = Optional.ofNullable(this.hbaseService.getImageRecord(imageName));
-        if (optionalImageRecord.isPresent()) {
-            log.info("getImageRecordFromHBase - 200");
-            return new ResponseEntity<ImageRecord>(optionalImageRecord.get(), HttpStatus.OK);
-        }
-        else {
-            log.info("getImageRecordFromHBase - 404");
-            return new ResponseEntity<ImageRecord>(HttpStatus.NOT_FOUND); 
-        }
-    }
-
-    @PostMapping
-    @RequestMapping("/hbase")
-    public ResponseEntity<Void> addImageRecordToHBase(@Valid @RequestBody ImageRecord imageRecord) {
         this.hbaseService.saveImageRecord(imageRecord);
-        log.info("addImageRecordToHBase - 201", imageRecord);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        log.info("addImageRecord - 200", imageRecord);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

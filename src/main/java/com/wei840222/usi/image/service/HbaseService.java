@@ -6,20 +6,36 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.hadoop.hbase.HbaseTemplate;
 import org.springframework.data.hadoop.hbase.RowMapper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncConfigurer;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import com.wei840222.usi.image.model.ImageRecord;
 
 @Slf4j
 @Service
-public class HBaseService {
+@EnableAsync
+public class HBaseService implements AsyncConfigurer {
     @Autowired
     private HbaseTemplate hbaseTemplate;
+
+    @Override
+    public Executor getAsyncExecutor() {
+        final ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(10);
+        taskExecutor.setMaxPoolSize(30);
+        taskExecutor.setQueueCapacity(2000);
+        taskExecutor.initialize();
+        return taskExecutor;
+    }
 
     public ImageRecord getImageRecord(String imageName) {
         return this.hbaseTemplate.get("image_record", imageName, "data", new RowMapper<ImageRecord>() {
@@ -52,6 +68,7 @@ public class HBaseService {
         });
     }
 
+    @Async
     public void saveImageRecord(ImageRecord imageRecord) {
         this.hbaseTemplate.put("image_record", imageRecord.getImageName(), "data", "imageName",
                 imageRecord.getImageName().getBytes());
@@ -61,6 +78,7 @@ public class HBaseService {
                 ByteBuffer.allocate(4).putInt(imageRecord.getStartByte()).array());
         this.hbaseTemplate.put("image_record", imageRecord.getImageName(), "data", "fileSize",
                 ByteBuffer.allocate(4).putInt(imageRecord.getFileSize()).array());
+        log.info("saveImageRecord {}", imageRecord);
     }
 
     private String getCellValueToString(Cell cell) {
