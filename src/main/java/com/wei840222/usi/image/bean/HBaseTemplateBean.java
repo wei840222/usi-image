@@ -3,10 +3,10 @@ package com.wei840222.usi.image.bean;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean; 
-import org.springframework.context.annotation.Configuration; 
-import org.springframework.data.hadoop.hbase.HbaseTemplate; 
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.hadoop.hbase.HbaseTemplate;
 
-@Configuration 
+@Configuration
 public class HBaseTemplateBean {
     @Value("${spring.hbase.zookeeper.quorum}")
     private String hbaseZookeeperQuorum;
