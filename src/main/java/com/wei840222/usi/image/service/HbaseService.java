@@ -17,7 +17,7 @@ import com.wei840222.usi.image.model.ImageRecord;
 
 @Slf4j
 @Service
-public class HbaseService {
+public class HBaseService {
     @Autowired
     private HbaseTemplate hbaseTemplate;
 
@@ -31,20 +31,16 @@ public class HbaseService {
                         switch (Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(),
                                 cell.getQualifierLength())) {
                         case "imageName":
-                            imageRecord.setImageName(
-                                    Bytes.toString(cell.getValueArray(), cell.getValueOffset(), cell.getValueLength()));
+                            imageRecord.setImageName(getCellValueToString(cell));
                             break;
                         case "mergeFile":
-                            imageRecord.setMergeFile(
-                                    Bytes.toString(cell.getValueArray(), cell.getValueOffset(), cell.getValueLength()));
+                            imageRecord.setMergeFile(getCellValueToString(cell));
                             break;
                         case "startByte":
-                            imageRecord.setStartByte(
-                                    Bytes.toInt(cell.getValueArray(), cell.getValueOffset(), cell.getValueLength()));
+                            imageRecord.setStartByte(getCellValueToInteger(cell));
                             break;
                         case "fileSize":
-                            imageRecord.setFileSize(
-                                    Bytes.toInt(cell.getValueArray(), cell.getValueOffset(), cell.getValueLength()));
+                            imageRecord.setFileSize(getCellValueToInteger(cell));
                             break;
                         }
                     }
@@ -65,5 +61,13 @@ public class HbaseService {
                 ByteBuffer.allocate(4).putInt(imageRecord.getStartByte()).array());
         this.hbaseTemplate.put("image_record", imageRecord.getImageName(), "data", "fileSize",
                 ByteBuffer.allocate(4).putInt(imageRecord.getFileSize()).array());
+    }
+
+    private String getCellValueToString(Cell cell) {
+        return Bytes.toString(cell.getValueArray(), cell.getValueOffset(), cell.getValueLength());
+    }
+
+    private Integer getCellValueToInteger(Cell cell) {
+        return Bytes.toInt(cell.getValueArray(), cell.getValueOffset(), cell.getValueLength());
     }
 }

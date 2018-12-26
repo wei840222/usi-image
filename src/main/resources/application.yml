@@ -1,4 +1,10 @@
-spring.redis:
-  database: 0
-  host: ${REDIS_HOST:140.124.181.60}
-  port: ${REDIS_PORT:31486}
+spring:
+  redis:
+    database: 0
+    host: ${REDIS_HOST:140.124.181.60}
+    port: ${REDIS_PORT:31486}
+  hbase:
+    zookeeper:
+      quorum: localhost:2181
+      znode.parent: /hbase
+    rootdir: file:///Users/wei/Downloads/hbase-2.1.1/data

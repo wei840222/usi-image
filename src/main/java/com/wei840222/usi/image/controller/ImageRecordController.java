@@ -5,7 +5,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import com.wei840222.usi.image.model.ImageRecord;
-import com.wei840222.usi.image.service.HbaseService;
+import com.wei840222.usi.image.service.HBaseService;
 import com.wei840222.usi.image.service.RedisService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class ImageRecordController {
     @Autowired
     private RedisService redisService;
     @Autowired
-    private HbaseService hbaseService;
+    private HBaseService hbaseService;
 
     @GetMapping
     @RequestMapping("/{imageName}")
