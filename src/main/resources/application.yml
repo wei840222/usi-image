@@ -5,6 +5,6 @@ spring:
     port: ${REDIS_PORT:31486}
   hbase:
     zookeeper:
-      quorum: localhost:2181
-      znode.parent: /hbase
-    rootdir: file:///Users/wei/Downloads/hbase-2.1.1/data
+      quorum: ${HBASE_ZOOKEEPER_QUORUM:localhost:2181}
+      znode.parent: ${HBASE_ZOOKEEPER_ZNODE_PARENT:/hbase}
+    rootdir: ${HBASE_ROOTDIR:file:///Users/wei/Downloads/hbase-2.1.1/data}
